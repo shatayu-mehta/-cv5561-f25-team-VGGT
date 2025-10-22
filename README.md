@@ -2,7 +2,7 @@
 CSCI5561 Computer Vision group course project
 # Implementation of "VGGT: Visual Geometry Grounded Transformer" for CSCI 5561
 
-This repository contains the final project for the CSCI 5561: Introduction to Machine Vision (Fall 2025) course. [cite_start]Our project is an implementation of the research paper "VGGT: Visual Geometry Grounded Transformer".
+This repository contains the final project for the CSCI 5561: Introduction to Machine Vision (Fall 2025) course. Our project is an implementation of the research paper "VGGT: Visual Geometry Grounded Transformer".
 
 ## Team Members
 
