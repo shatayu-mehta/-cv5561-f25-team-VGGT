@@ -11,14 +11,14 @@ The project is divided among three members with the following roles and responsi
 * **Pritish Vitekar**
     * **Email**: vitek031@umn.edu
     * **Role**: Architecture
-    * **Description**: Implements the core VGGT transformer backbone with its Alternating-Attention mechanism[cite: 287, 292].
+    * **Description**: Implements the core VGGT transformer backbone with its Alternating-Attention mechanism.
 
 * **Shatayu Mehta**
     * **Email**: mehta405@umn.edu
     * **Role**: Data & Pre-processing
-    * **Description**: Manages the data pipeline, including dataset loading, pre-processing, and normalization[cite: 288, 341].
+    * **Description**: Manages the data pipeline, including dataset loading, pre-processing, and normalization.
 
 * **Tarannum Perween**
     * **Email**: perwe003@umn.edu
     * **Role**: Prediction & Evaluation
-    * **Description**: Develops the model's prediction heads, the multi-task loss function, and the evaluation metrics[cite: 301, 328].
+    * **Description**: Develops the model's prediction heads, the multi-task loss function, and the evaluation metrics.
