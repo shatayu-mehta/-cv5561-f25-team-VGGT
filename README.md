@@ -2,11 +2,11 @@
 CSCI5561 Computer Vision group course project
 # Implementation of "VGGT: Visual Geometry Grounded Transformer" for CSCI 5561
 
-This repository contains the final project for the CSCI 5561: Introduction to Machine Vision (Fall 2025) course. [cite_start]Our project is an implementation of the research paper "VGGT: Visual Geometry Grounded Transformer"[cite: 151].
+This repository contains the final project for the CSCI 5561: Introduction to Machine Vision (Fall 2025) course. [cite_start]Our project is an implementation of the research paper "VGGT: Visual Geometry Grounded Transformer".
 
 ## Team Members
 
-[cite_start]The project is divided among three members with the following roles and responsibilities[cite: 40]:
+The project is divided among three members with the following roles and responsibilities[cite: 40]:
 
 * **Pritish Vitekar**
     * **Email**: vitek031@umn.edu
