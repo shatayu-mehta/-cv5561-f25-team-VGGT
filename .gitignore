@@ -1,0 +1,42 @@
+# Exclude datasets
+datasets/
+Image_datasets/
+Cleanedup_dataset/
+
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+
+# Distribution / packaging
+*.egg-info/
+dist/
+build/
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# Environment
+.env
+.venv
+env/
+venv/
+ENV/
+VGGT/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Large installer files
+*.sh
+Miniconda3-*.sh
+
+# Large output files and datasets
+*.tgz
+*.ply
+*.tar.gz
+*.zip
+Outputs/RGB-D_TUM/Run_112_Frames_L40/
