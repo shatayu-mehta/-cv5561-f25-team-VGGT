@@ -13,7 +13,7 @@ Download the following files and place them in the `vggt/` directory:
 - `yolov8n-seg.pt` - YOLO v8 nano segmentation model
 
 ### Google Drive Link
-**Download all model files from:** [ADD YOUR GOOGLE DRIVE LINK HERE]
+**Download all model files from:** https://drive.google.com/drive/folders/17klTdjohqyWgIolCivYiltYGwM5Vg-RT?usp=sharing
 
 ## Installation Steps
 
