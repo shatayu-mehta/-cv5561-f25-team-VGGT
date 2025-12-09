@@ -1,0 +1,305 @@
+{
+  "__comment__": "THE MOTHERLODE V2: Deep Scene Priors including exhaustive Cabinetry & Storage.",
+
+  "__STORAGE_AND_CABINETRY__": [],
+  "cabinet": [
+    "cabinet", "cupboard", "storage unit", "case good", "built-in",
+    "kitchen cabinet", "base cabinet", "wall cabinet", "island", "pantry", "larder",
+    "medicine cabinet", "bathroom cabinet", "vanity",
+    "china cabinet", "display cabinet", "curio cabinet", "hutch", "breakfront",
+    "buffet", "sideboard", "credenza", "server", "console", "media console",
+    "file cabinet", "filing cabinet", "lateral file", "pedestal",
+    "utility cabinet", "garage cabinet", "tool cabinet", "locker", "storage locker",
+    "door", "cabinet door", "panel", "frame", "kick plate", "toe kick"
+  ],
+  "drawer": [
+    "drawer", "drawer front", "face", "pull out", "sliding drawer",
+    "chest of drawers", "dresser", "bureau", "highboy", "lowboy", "tallboy",
+    "handle", "knob", "pull", "hardware",
+    "runner", "track", "slide", "rail", "divider", "liner"
+  ],
+  "wardrobe": [
+    "wardrobe", "armoire", "chifforobe", "closet", "fitted closet", "walk-in closet",
+    "clothing rack", "garment rack", "rail", "hanger", "shelf", "shelving",
+    "door", "sliding door", "mirror door", "shoe rack"
+  ],
+  "shelving": [
+    "shelf", "shelves", "shelving", "bookshelf", "bookcase", "etagere",
+    "floating shelf", "wall shelf", "ledge", "bracket", "support",
+    "rack", "storage rack", "baker's rack", "wire rack"
+  ],
+
+  "__ABSTRACT_GROUPS__": [],
+  "dishes": [
+    "dish", "dishes", "stack of plates", "crockery", "chinaware", "dinnerware", "tableware", 
+    "plate", "bowl", "cup", "glass", "mug", "saucer", "platter", "tray",
+    "cutlery", "utensil", "silverware", "flatware", "spoon", "fork", "knife",
+    "drying rack", "dish rack", "sponge", "soap bottle", "scrubber", "sink", "drain"
+  ],
+  "laundry": [
+    "laundry", "clothes", "clothing", "pile of clothes", "fabric", "textile",
+    "shirt", "t-shirt", "pants", "jeans", "trousers", "shorts", "skirt", "dress",
+    "sock", "underwear", "jacket", "coat", "hoodie", "sweater", "sweatshirt",
+    "laundry basket", "hamper", "washing machine", "dryer", "iron", "ironing board",
+    "hanger", "rack", "clothesline", "clothespin", "detergent", "fabric softener"
+  ],
+  "garbage": [
+    "garbage", "trash", "rubbish", "waste", "litter", "junk", "debris",
+    "trash can", "garbage bin", "wastebasket", "dumpster", "recycle bin",
+    "garbage bag", "trash bag", "plastic bag", "crumpled paper", "wrapper",
+    "can", "tin can", "bottle", "cardboard", "banana peel", "apple core"
+  ],
+  "clutter": [
+    "clutter", "mess", "pile", "stack", "junk", "stuff", "miscellaneous",
+    "paper", "mail", "envelope", "receipt", "magazine", "newspaper",
+    "cable", "wire", "cord", "charger", "adapter",
+    "pen", "pencil", "keys", "wallet", "coin", "change",
+    "box", "bag", "toy", "clothing"
+  ],
+
+  "__KITCHEN_DEEP_DIVE__": [],
+  "kitchen": [
+    "kitchen", "kitchenette", "pantry", "galley",
+    "counter", "countertop", "granite", "marble", "kitchen island", "bar stool",
+    "cabinet", "cupboard", "drawer", "handle", "knob", "pantry shelf",
+    "sink", "basin", "faucet", "tap", "drain", "soap dispenser", "sponge holder",
+    "appliance", "refrigerator", "fridge", "freezer", "ice maker", "stove", "range", "cooktop", "burner",
+    "oven", "oven door", "oven handle", "microwave", "turntable", "dishwasher", "rack",
+    "trash can", "recycle bin", "compost bin", "towel", "dish towel", "oven mitt", "apron",
+    "toaster", "kettle", "coffee maker", "blender", "mixer", "spice rack", "bin", "sponge"
+  ],
+  "cooking": [
+    "pot", "saucepan", "stockpot", "frying pan", "skillet", "wok", "griddle",
+    "lid", "glass lid", "handle", "dutch oven", "casserole dish", "baking sheet", "roasting pan",
+    "cutting board", "chopping board", "knife block", "chef knife", "paring knife", "cleaver",
+    "spatula", "turner", "ladle", "whisk", "tongs", "peeler", "grater", "zester", "masher",
+    "measuring cup", "measuring spoon", "scale", "timer", "thermometer",
+    "mixing bowl", "colander", "strainer", "sieve", "rolling pin"
+  ],
+  "beverages": [
+    "coffee maker", "espresso machine", "french press", "pour over", "grinder", "kettle", "electric kettle",
+    "teapot", "tea bag", "coffee bean", "coffee ground", "sugar bowl", "creamer",
+    "blender", "juicer", "smoothie maker", "soda stream",
+    "bottle", "water bottle", "wine bottle", "beer bottle", "cork", "cap", "opener"
+  ],
+
+  "__FOOD_AND_ORGANIC__": [],
+  "food": [
+    "food", "meal", "snack", "breakfast", "lunch", "dinner", "dessert",
+    "bread", "loaf", "slice", "toast", "sandwich", "burger", "pizza", "pasta", "noodle", "rice",
+    "meat", "steak", "chicken", "pork", "fish", "salmon", "egg", "bacon", "sausage",
+    "cheese", "butter", "yogurt", "milk", "cream",
+    "cake", "pie", "cookie", "biscuit", "chocolate", "candy", "ice cream",
+    "chip", "cracker", "popcorn", "nut", "seed"
+  ],
+  "fruit": [
+    "fruit", "fresh fruit", "apple", "red apple", "green apple", "yellow apple", "banana", "bunch of bananas", "peel", "bunch",
+    "orange", "mandarin", "tangerine", "clementine", "grapefruit", "pomelo", "citrus",
+    "lemon", "lime", "zest",
+    "grape", "green grape", "red grape", "bunch of grapes",
+    "berry", "strawberry", "blueberry", "raspberry", "blackberry", "cranberry",
+    "melon", "watermelon", "cantaloupe", "honeydew",
+    "stone fruit", "peach", "nectarine", "apricot", "plum", "cherry",
+    "tropical fruit", "pineapple", "mango", "papaya", "kiwi", "pomegranate", "coconut", "avocado", "tomato",
+    "pear", "fig", "date", "bowl", "basket", "crate"
+  ],
+  "vegetable": [
+    "vegetable", "veggie", "produce", "greens",
+    "root vegetable", "carrot", "potato", "sweet potato", "yam", "onion", "red onion", "garlic", "ginger", "beet", "radish",
+    "cruciferous", "broccoli", "cauliflower", "cabbage", "kale", "brussels sprout",
+    "leafy green", "lettuce", "spinach", "arugula", "chard", "herb", "basil", "parsley", "cilantro",
+    "fruit vegetable", "tomato", "cherry tomato", "cucumber", "zucchini", "squash", "pumpkin", "eggplant", "pepper", "bell pepper", "jalapeno", "chili",
+    "corn", "corn on the cob", "cob", "mushroom", "bean", "pea", "asparagus", "celery"
+  ],
+
+  "__OFFICE_AND_TECH__": [],
+  "computer": [
+    "computer", "pc", "personal computer", "desktop", "workstation", "tower", "case",
+    "laptop", "notebook", "ultrabook", "macbook", "chromebook", "screen", "keyboard", "hinge",
+    "monitor", "display", "screen", "panel", "bezel", "stand", "arm", "mount",
+    "keyboard", "key", "spacebar", "numpad", "mouse", "scroll wheel", "buttons", "trackpad", "mousepad",
+    "cable", "hdmi", "usb", "ethernet", "power cord", "adapter", "dongle", "hub", "dock",
+    "webcam", "camera", "microphone", "speaker", "headset", "headphones"
+  ],
+  "desk_items": [
+    "pen", "ballpoint", "fountain pen", "pencil", "mechanical pencil", "stylus",
+    "marker", "permanent marker", "highlighter", "dry erase marker",
+    "eraser", "sharpener", "ruler", "scissors", "x-acto knife", "box cutter",
+    "tape", "scotch tape", "masking tape", "duct tape", "dispenser",
+    "stapler", "staple remover", "hole punch", "paper clip", "binder clip", "thumbtack", "push pin",
+    "notebook", "notepad", "journal", "diary", "sketchbook", "sticky note", "post-it",
+    "folder", "file", "binder", "envelope", "document", "paper", "stack of paper",
+    "calculator", "phone", "smartphone", "tablet", "ipad", "charger"
+  ],
+
+  "__TOOLS_AND_CONSTRUCTION__": [],
+  "tool": [
+    "tool", "hardware", "instrument", "implement",
+    "hammer", "mallet", "sledgehammer", "claw hammer",
+    "screwdriver", "flathead", "phillips", "hex key", "allen wrench",
+    "wrench", "adjustable wrench", "spanner", "socket", "ratchet",
+    "pliers", "needle nose", "wire cutter", "vice grip", "clamp",
+    "saw", "handsaw", "hacksaw", "circular saw", "jigsaw", "chainsaw",
+    "drill", "power drill", "impact driver", "bit", "auger",
+    "tape measure", "ruler", "level", "square", "caliper",
+    "knife", "utility knife", "box cutter", "scraper", "file", "rasp", "sandpaper"
+  ],
+  "fastener": [
+    "fastener", "screw", "wood screw", "machine screw", "bolt", "hex bolt",
+    "nut", "wing nut", "washer", "nail", "tack", "rivet", "anchor",
+    "hook", "eye hook", "hinge", "bracket", "brace"
+  ],
+  "excavator": [
+    "excavator", "toy excavator", "hydraulic excavator", "digger", "backhoe", "trackhoe",
+    "construction vehicle", "heavy equipment", "earthmover", "heavy machinery",
+    "cab", "cockpit", "cabin", "window", "roof", "light",
+    "undercarriage", "track", "tread", "caterpillar track", "caterpillar tracks", "treads", "wheel", "wheels", "roller", "sprocket",
+    "upper structure", "counterweight", "engine cover", "exhaust",
+    "boom", "arm", "stick", "dipper", "hydraulic cylinder", "piston", "hose", "pipe",
+    "bucket", "scoop", "teeth", "cutting edge", "thumb"
+  ],
+
+  "__FURNITURE_PARTS__": [],
+  "chair": [
+    "chair", "seat", "seating",
+    "leg", "chair leg", "foot", "base", "spindle",
+    "seat pan", "cushion", "upholstery", "fabric", "leather",
+    "back", "backrest", "spoke", "slat", "frame",
+    "arm", "armrest",
+    "swivel chair", "office chair", "dining chair", "stool", "bar stool", "bench"
+  ],
+  "table": [
+    "table", "surface", "tabletop", "desktop", "counter",
+    "leg", "table leg", "trestle", "pedestal", "base", "foot",
+    "edge", "corner", "apron",
+    "dining table", "coffee table", "side table", "end table", "nightstand", "desk", "workbench"
+  ],
+  "__KITCHEN_AND_DINING__": [],
+  "bottle": [
+    "bottle", "water bottle", "plastic bottle", "glass bottle", "wine bottle", "beer bottle", "soda bottle",
+    "thermos", "flask", "hydro flask", "tumbler", "sports bottle", "baby bottle", "shampoo bottle", "detergent bottle",
+    "oil bottle", "vinegar bottle", "jar", "mason jar", "bottle cap", "cork", "lid", "label", "neck"
+  ],
+  "cup": [
+    "cup", "mug", "coffee mug", "tea cup", "teacup", "paper cup", "plastic cup", "travel mug",
+    "glass", "drinking glass", "wine glass", "champagne flute", "beer glass", "pint glass", "shot glass",
+    "tumbler", "highball glass", "goblet", "chalice", "stem", "coaster", "straw", "lid"
+  ],
+  "bowl": [
+    "bowl", "soup bowl", "cereal bowl", "salad bowl", "fruit bowl", "mixing bowl", "serving bowl",
+    "ceramic bowl", "glass bowl", "plastic bowl", "wooden bowl", "pet bowl", "dog bowl", "cat bowl",
+    "tupperware", "container", "lid", "rim"
+  ],
+  "plate": [
+    "plate", "dish", "dinner plate", "salad plate", "dessert plate", "side plate", "saucer",
+    "platter", "serving platter", "tray", "china", "ceramic plate", "paper plate", "plastic plate",
+    "charger plate", "bowl"
+  ],
+  "cutlery": [
+    "cutlery", "flatware", "silverware", "utensil", "spoon", "fork", "knife", "teaspoon", "tablespoon",
+    "soup spoon", "steak knife", "butter knife", "paring knife", "chef knife", "chopping knife",
+    "ladle", "spatula", "tongs", "whisk", "peeler", "grater", "corkscrew", "chopsticks"
+  ],
+  "tableware": [
+    "tableware", "dinnerware", "glassware", "place setting", "napkin", "tablecloth", "placemat",
+    "salt shaker", "pepper shaker", "cruet", "sauce boat", "butter dish", "sugar bowl", "creamer"
+  ],
+
+  "__DOMESTIC_LIVING__": [],
+  "living": [
+    "living room", "sofa", "couch", "loveseat", "armchair", "recliner", "ottoman", "footstool",
+    "coffee table", "side table", "end table", "console table", "tv stand", "entertainment center",
+    "television", "tv", "screen", "remote", "remote control", "speaker", "soundbar",
+    "fireplace", "mantel", "hearth", "rug", "carpet", "curtain", "drapes", "blinds",
+    "plant", "houseplant", "pot", "vase", "painting", "picture frame", "cushion", "pillow", "throw blanket"
+  ],
+  "bedroom": [
+    "bedroom", "bed", "bed frame", "headboard", "mattress", "pillow", "duvet", "comforter", "blanket", "bedsheet",
+    "nightstand", "bedside table", "lamp", "alarm clock", "wardrobe", "closet", "armoire", "dresser", "chest of drawers",
+    "drawer", "mirror", "vanity", "hanger", "clothes", "laundry basket", "slipper"
+  ],
+  "bathroom": [
+    "bathroom", "toilet", "toilet seat", "tank", "flush", "sink", "basin", "faucet", "tap",
+    "bathtub", "tub", "shower", "shower head", "shower curtain", "drain",
+    "mirror", "vanity", "cabinet", "towel", "bath towel", "hand towel", "towel rack",
+    "toilet paper", "toilet roll", "toothbrush", "toothpaste", "soap", "shampoo", "conditioner", "loofah", "scale"
+  ],
+
+  "__OFFICE_AND_WORK__": [],
+  "office": [
+    "office", "workspace", "cubicle", "desk", "standing desk", "L-shaped desk", "drawer",
+    "chair", "office chair", "swivel chair", "ergonomic chair", "armrest", "castor", "wheel",
+    "monitor", "computer screen", "display", "dual monitor", "stand",
+    "computer", "pc", "desktop", "tower", "case", "laptop", "notebook", "macbook",
+    "keyboard", "mechanical keyboard", "keycap", "mouse", "mousepad", "trackpad",
+    "printer", "scanner", "shredder", "telephone", "landline", "headset", "headphones",
+    "whiteboard", "marker", "eraser", "corkboard", "pin", "file cabinet", "bookshelf", "binder", "folder"
+  ],
+  "stationery": [
+    "pen", "pencil", "marker", "highlighter", "sharpie", "eraser", "ruler", "scissors", "stapler",
+    "staples", "paper clip", "binder clip", "tape", "dispenser", "notebook", "notepad", "post-it", "sticky note",
+    "paper", "document", "envelope", "calculator"
+  ],
+  "box": [
+    "box", "cardboard box", "shipping box", "moving box", "carton", "crate", "plastic crate",
+    "storage bin", "container", "lid", "tape", "packing tape", "label", "sticker", "package", "parcel"
+  ],
+
+  "__INDUSTRIAL_AND_ROBOTICS__": [],
+  "lab": [
+    "laboratory", "lab bench", "workbench", "fume hood", "microscope", "telescope",
+    "beaker", "flask", "erlenmeyer", "test tube", "rack", "pipette", "dropper", "petri dish",
+    "scale", "balance", "centrifuge", "bunsen burner", "safety goggles", "gloves", "lab coat",
+    "robot", "robotic arm", "gripper", "end effector", "cable", "wire", "circuit board", "pcb", "soldering iron"
+  ],
+  "workshop": [
+    "workshop", "garage", "workbench", "vise", "tool chest", "pegboard",
+    "tool", "power tool", "hand tool", "drill", "impact driver", "saw", "circular saw", "jigsaw",
+    "hammer", "mallet", "screwdriver", "wrench", "spanner", "pliers", "cutters", "tape measure", "level",
+    "screw", "nail", "bolt", "nut", "washer", "wood", "plank", "plywood", "metal", "sheet metal", "pipe"
+  ],
+  "construction": [
+    "construction site", "scaffolding", "ladder", "cone", "traffic cone", "barrier", "sign",
+    "helmet", "hard hat", "vest", "safety vest", "boots", "gloves",
+    "crane", "hook", "cable", "concrete", "cement", "mixer", "brick", "cinder block",
+    "sand", "gravel", "dirt", "pile", "shovel", "pickaxe", "wheelbarrow"
+  ],
+  "bulldozer": [
+    "bulldozer", "toy bulldozer", "dozer", "crawler", "tractor", "construction vehicle",
+    "blade", "plow", "ripper", "tracks", "treads", "engine", "exhaust"
+  ],
+
+  "__FRUIT_AND_NATURE__": [],
+  "apple": [
+    "apple", "red apple", "green apple", "yellow apple", "fruit", "food", "snack",
+    "skin", "peel", "flesh", "core", "seed", "stem", "stalk", "leaf", "bruise"
+  ],
+  "garden": [
+    "garden", "yard", "lawn", "grass", "turf", "soil", "dirt", "mulch", "gravel",
+    "plant", "flower", "blossom", "petal", "stem", "leaf", "leaves", "weed",
+    "tree", "trunk", "bark", "branch", "twig", "root", "stump",
+    "bush", "shrub", "hedge", "fern", "moss", "ivy", "vine",
+    "pot", "planter", "flowerpot", "vase", "watering can", "hose", "nozzle", "sprinkler",
+    "shovel", "trowel", "rake", "wheelbarrow", "mower"
+  ],
+
+  "__TOYS_AND_MISC__": [],
+  "toy": [
+    "toy", "action figure", "figurine", "doll", "barbie", "puppet",
+    "stuffed animal", "plush", "teddy bear", "soft toy",
+    "car", "toy car", "hot wheels", "matchbox", "truck", "toy truck", "train", "toy train",
+    "blocks", "building blocks", "lego", "brick", "puzzle", "board game",
+    "ball", "soccer ball", "basketball", "tennis ball", "balloon", "robot", "toy robot", "drone"
+  ],
+  "lego": [
+    "lego", "lego brick", "lego block", "lego plate", "lego piece", "stud",
+    "minifigure", "lego man", "lego head", "lego hand", "accessory",
+    "model", "set", "technic", "gear", "axle", "wheel", "connector"
+  ],
+
+  "__GENERIC_FALLBACK__": [],
+  "generic": [
+    "object", "thing", "item", "shape", "structure",
+    "chair", "table", "box", "door", "window", "wall", "floor", "ceiling", "light"
+  ]
+}
