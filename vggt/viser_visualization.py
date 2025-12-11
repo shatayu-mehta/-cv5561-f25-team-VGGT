@@ -51,54 +51,53 @@ def main():
     
     server = viser.ViserServer(port=args.port, share=not args.no_share)
     
-    # Dictionary to map filename -> full path
-    # We prepend the dataset name to avoid confusion if multiple datasets have "raw.ply"
+    # Create display names: "DatasetName | filename.ply" for clarity
     file_options = {}
     for f in ply_files:
-        # Format: "DatasetName - FileName"
-        # e.g. "dishes - top95percent.ply"
         dataset_name = f.parent.parent.parent.name 
         key = f"{dataset_name} | {f.name}"
         file_options[key] = f
 
     file_names = sorted(list(file_options.keys()))
 
-    # State Management
+    # State management for dynamic point cloud loading
     current_handle = None
-    # We store the current object center to orient new clients correctly
     current_center = np.array([0.0, 0.0, 0.0])
 
     @server.on_client_connect
     def _(client: viser.ClientHandle) -> None:
-        # When you connect, look at the current object center
-        client.camera.look_at = current_center
+        \"\"\"When new client connects, point camera at current object center.\"\"\"\n        client.camera.look_at = current_center
 
     def load_ply(name):
-        nonlocal current_handle, current_center
+        \"\"\"Load and display selected point cloud file.\"\"\"\n        nonlocal current_handle, current_center
         path = file_options[name]
         
-        print(f"Loading: {name}...")
+        print(f\"Loading: {name}...\")
         try:
             mesh = trimesh.load(path)
         except Exception as e:
             print(f"Failed to load {name}: {e}")
             return
 
+        # Handle Scene objects (multiple geometries)
         if isinstance(mesh, trimesh.Scene):
             if len(mesh.geometry) > 0:
                 mesh = list(mesh.geometry.values())[0]
             else:
                 return
 
+        # Extract points and colors from mesh
         points = mesh.vertices
         if hasattr(mesh.visual, 'vertex_colors'):
             colors = mesh.visual.vertex_colors[:, :3]
         else:
             colors = np.ones_like(points) * 255
 
+        # Remove previous point cloud if exists
         if current_handle is not None:
             current_handle.remove()
 
+        # Add new point cloud to scene
         current_handle = server.scene.add_point_cloud(
             name="point_cloud",
             points=points,
@@ -106,20 +105,19 @@ def main():
             point_size=0.015,
         )
         
-        # Reset camera for all connected clients (The Fix)
+        # Update camera for all connected clients to focus on new object
         if len(points) > 0:
             center = np.mean(points, axis=0)
-            current_center = center # Update global state for new clients
+            current_center = center
             for client in server.get_clients().values():
                 client.camera.look_at = center
 
-    # GUI Elements
+    # Create GUI controls
     with server.gui.add_folder("Controls"):
         gui_file = server.gui.add_dropdown(
             "Select File",
             options=file_names,
-            # Default to the last one (usually the best filtered one)
-            initial_value=file_names[-1] 
+            initial_value=file_names[-1]  # Default to highest quality filter
         )
         gui_size = server.gui.add_slider(
             "Point Size",
@@ -131,16 +129,17 @@ def main():
 
     @gui_file.on_update
     def _(_):
-        load_ply(gui_file.value)
+        \"\"\"Callback when dropdown selection changes.\"\"\"\n        load_ply(gui_file.value)
 
     @gui_size.on_update
     def _(_):
-        if current_handle is not None:
+        \"\"\"Callback when point size slider changes.\"\"\"\n        if current_handle is not None:
             current_handle.point_size = gui_size.value
 
-    # Initial Load
+    # Load initial point cloud
     load_ply(file_names[-1])
 
+    # Keep server running
     while True:
         time.sleep(1.0)
 
