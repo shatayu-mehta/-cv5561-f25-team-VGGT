@@ -1,11 +1,22 @@
 # VGGT Implementation - Computer Vision Project
 
-This repository contains our implementation and extensions of Visual Geometry Grounded Transformer (VGGT) for 3D reconstruction and scene understanding.
+This repository contains our implementation and extensions of Visual Geometry Grounded Transformer (VGGT) for 3D reconstruction and scene understanding. We implement two methods for 3D object segmentation and reconstruction:
+- **Method A**: YOLO + SAM with 3D lifting
+- **Method B**: Geometric propagation-based segmentation
 
 ## Repository Structure
 
-- `vggt/` - Main VGGT implementation (see [vggt/README.md](vggt/README.md) for details)
-- `my_datasets/` - Local datasets for testing (images available via Google Drive)
+```
+├── vggt/                          # Main implementation directory
+│   ├── vggt_infererence.py        # VGGT inference and point cloud processing
+│   ├── Yolo_SAM.py                # Method A: YOLO+SAM segmentation with 3D lifting
+│   ├── propogation.py             # Method B: Geometric propagation segmentation
+│   ├── viser_visualization.py     # Interactive 3D visualization tool
+│   ├── scene_priors.json          # Scene configuration and object categories
+│   └── ...                        # Additional utility scripts
+├── my_datasets/                   # Input datasets (images only, organized by scene)
+└── evaluation/                    # Evaluation metrics and results (local only)
+```
 
 ## Quick Setup
 
@@ -61,68 +72,55 @@ Our robust implementation of VGGT for 3D reconstruction with enhanced error hand
 python vggt/vggt_infererence.py --scene_dir /path/to/your/images/
 ```
 
-### 2. **`visual_util.py`** - Custom Visualization Tools
-Enhanced visualization utilities for 3D point clouds and reconstruction results.
 
+
+## Complete Workflow Example
+
+Here's a complete pipeline from images to visualization:
+
+### Step 1: Prepare Your Dataset
+
+Organize your images in the following structure:
+```
+my_datasets/your_scene/
+└── images/
+    ├── frame_001.jpg
+    ├── frame_002.jpg
+    └── ...
+```
+
+### Step 2: Run VGGT Inference
+
+Generate depth maps and camera poses:
 ```bash
-python vggt/visual_util.py --scene_dir /path/to/scene/
+cd vggt
+python vggt_infererence.py --scene_dir ../my_datasets/your_scene/
 ```
 
-### 3. **`scene_priors.json`** - Scene Configuration
-JSON configuration file containing scene priors, object categories, and semantic information for reconstruction.
+This creates:
+- `your_scene/outputs/depths/` - Depth maps for each frame
+- `your_scene/outputs/poses/` - Camera intrinsics and extrinsics
 
-Located at: `vggt/scene_priors.json`
+### Step 3: Run Segmentation (Choose Method A or B)
 
-### 4. **`viser_visualization.py`** - Interactive 3D Viewer
-Interactive 3D visualization using Viser for exploring reconstruction results.
-
+**Method A: YOLO+SAM (Recommended for distinct objects)**
 ```bash
-python vggt/viser_visualization.py --scene_dir /path/to/scene/
+python Yolo_SAM.py --scene_dir ../my_datasets/your_scene/ --target_object "cabinet"
 ```
 
-**Note:** Other files in the repository are experimental or work-in-progress and may not be fully functional.
-
-## Basic Usage Example
-
-```python
-import torch
-from vggt.models.vggt import VGGT
-from vggt.utils.load_fn import load_and_preprocess_images
-
-device = "cuda" if torch.cuda.is_available() else "cpu"
-dtype = torch.bfloat16 if torch.cuda.get_device_capability()[0] >= 8 else torch.float16
-
-# Initialize model
-model = VGGT.from_pretrained("facebook/VGGT-1B").to(device)
-
-# Load your images
-image_names = ["path/to/imageA.png", "path/to/imageB.png"]  
-images = load_and_preprocess_images(image_names).to(device)
-
-# Run reconstruction
-with torch.no_grad():
-    with torch.cuda.amp.autocast(dtype=dtype):
-        predictions = model(images)
-```
-
-## Running 3D Reconstruction
-
-### Using Our Custom Pipeline
-
+**Method B: Geometric Propagation (Better for texture-less objects)**
 ```bash
-# Basic reconstruction
-python vggt/vggt_infererence.py --scene_dir /path/to/images/
-
-# With visualization
-python vggt/viser_visualization.py --scene_dir /path/to/images/
+python propogation.py --scene_dir ../my_datasets/your_scene/ --target_object "cabinet"
 ```
 
-### Using Original VGGT Tools
+### Step 4: Visualize Results
 
-See detailed documentation in [vggt/README.md](vggt/README.md) for:
-- Gradio web interface: `python demo_gradio.py`
-- Viser 3D viewer: `python demo_viser.py --image_folder path/to/images/`
-- COLMAP export: `python demo_colmap.py --scene_dir=/path/to/scene/`
+Launch interactive 3D viewer:
+```bash
+python viser_visualization.py --scene_dir ../my_datasets/your_scene/
+```
+
+Open your browser to `http://localhost:8080` to explore the 3D reconstruction.
 
 ## Project Features
 
@@ -133,18 +131,39 @@ See detailed documentation in [vggt/README.md](vggt/README.md) for:
 - **Object Segmentation**: Integration with SAM2 for object-aware processing
 - **Scene Understanding**: Semantic scene priors for improved reconstruction
 
-## Dataset Structure
+## Implementation Details
 
-For best results, organize your data as follows:
+### Method A: YOLO+SAM Segmentation
+- **Detection**: Uses YOLO-World for open-vocabulary object detection
+- **Segmentation**: Applies SAM (Segment Anything Model) for precise mask generation
+- **3D Lifting**: Projects 2D masks to 3D using VGGT depth estimates
+- **Advantages**: Accurate for well-textured objects with clear boundaries
 
-```
-your_scene/
-├── images/
-│   ├── frame_001.jpg
-│   ├── frame_002.jpg
-│   └── ...
-└── (outputs will be generated here)
-```
+### Method B: Geometric Propagation
+- **Anchor Selection**: Detects objects in reference frame using YOLO+SAM
+- **Propagation**: Uses homography and depth information to propagate masks across frames
+- **Refinement**: Applies morphological operations and confidence thresholding
+- **Advantages**: More robust for texture-less objects and consistent across frames
+
+### Code Organization
+
+The codebase is organized into logical modules:
+
+1. **Inference Module** (`vggt_infererence.py`): Core VGGT inference and point cloud processing
+2. **Segmentation Modules**:
+   - `Yolo_SAM.py`: Detection-based segmentation (Method A)
+   - `propogation.py`: Propagation-based segmentation (Method B)
+3. **Visualization Module** (`viser_visualization.py`): Interactive 3D rendering
+4. **Configuration** (`scene_priors.json`): Scene-specific parameters and object categories
+5. **Utilities** (`visual_util.py`, `yolo_world.py`): Helper functions for processing and visualization
+
+### Documentation
+
+All major functions include docstrings and comments explaining:
+- Input/output specifications
+- Algorithm steps and logic
+- Parameter meanings and default values
+- Usage examples
 
 ## GPU Requirements
 
@@ -152,21 +171,59 @@ your_scene/
 - Recommended: 16GB+ VRAM for larger scenes (20+ images)
 - Optimal: NVIDIA H100 or A100 for large-scale reconstructions (100+ images)
 
+## Evaluation Metrics
+
+The repository includes evaluation scripts in the `evaluation/` directory:
+
+- **`eval_chamfer.py`**: Computes Chamfer distance between reconstructed and ground truth point clouds
+- **`eval_completeness.py`**: Measures reconstruction completeness and coverage
+- **`eval_segmentation.py`**: Evaluates segmentation mask quality (IoU, precision, recall)
+
+## Datasets
+
+### Included Example Dataset
+- **Cabinet Scene**: 24 frames from TUM RGB-D dataset
+- Located in: `vggt/example_data/Cabinet/images/`
+
+### External Datasets Used
+- **TUM RGB-D Dataset**: [https://cvg.cit.tum.de/data/datasets/rgbd-dataset](https://cvg.cit.tum.de/data/datasets/rgbd-dataset)
+  - Used for evaluation and testing
+  - Provides ground truth depth and camera poses
+
+### Custom Datasets
+All custom datasets are stored in `my_datasets/` with images only. Large files (depth maps, point clouds) are excluded from git and generated locally.
+
+**Google Drive Link for Complete Data**: [https://drive.google.com/drive/folders/17klTdjohqyWgIolCivYiltYGwM5Vg-RT?usp=sharing](https://drive.google.com/drive/folders/17klTdjohqyWgIolCivYiltYGwM5Vg-RT?usp=sharing)
+
 ## Troubleshooting
 
 ### Out of Memory Errors
 - Reduce batch size in processing scripts
-- Process fewer images at once
+- Process fewer images at once (e.g., 10-15 frames)
 - Use lower resolution images
+- Close other GPU applications
 
 ### Model Download Issues
 - Manually download model weights from Google Drive link above
 - Ensure internet connection for automatic Hugging Face downloads
+- Check firewall settings if downloads fail
 
-## Citation
+### Visualization Not Loading
+- Ensure viser is installed: `pip install viser`
+- Check that port 8080 is not in use
+- Try a different port: add `--port 8081` argument
 
-If you use this code, please cite the original VGGT paper:
+### Segmentation Quality Issues
+- Verify scene_priors.json contains your target object
+- Try both Method A and Method B - they work better for different object types
+- Ensure adequate lighting and texture in input images
+- Check that depth maps are being generated correctly
 
+## Citations and References
+
+This project builds upon several state-of-the-art research works and codebases:
+
+### Primary Research Paper
 ```bibtex
 @inproceedings{wang2025vggt,
   title={VGGT: Visual Geometry Grounded Transformer},
@@ -175,6 +232,29 @@ If you use this code, please cite the original VGGT paper:
   year={2025}
 }
 ```
+
+### External Codebases and Models
+
+1. **VGGT**: Visual Geometry Grounded Transformer
+   - Repository: [https://github.com/facebookresearch/vggt](https://github.com/facebookresearch/vggt)
+   - Used for: Core 3D reconstruction and depth estimation
+
+2. **YOLO-World**: Open-Vocabulary Object Detection
+   - Repository: [https://github.com/AILab-CVC/YOLO-World](https://github.com/AILab-CVC/YOLO-World)
+   - Used for: Object detection in Method A
+
+3. **Segment Anything Model (SAM)**
+   - Repository: [https://github.com/facebookresearch/segment-anything](https://github.com/facebookresearch/segment-anything)
+   - Used for: Precise segmentation mask generation
+
+4. **Viser**: 3D Visualization Library
+   - Repository: [https://github.com/nerfstudio-project/viser](https://github.com/nerfstudio-project/viser)
+   - Used for: Interactive 3D point cloud visualization
+
+### Additional References
+
+- **Depth Anything**: Used for alternative depth estimation experiments
+- **OpenCV**: Camera geometry and image processing utilities
 
 ## License
 
