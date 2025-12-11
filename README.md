@@ -6,8 +6,6 @@ This repository contains our implementation and extensions of Visual Geometry Gr
 
 - `vggt/` - Main VGGT implementation (see [vggt/README.md](vggt/README.md) for details)
 - `my_datasets/` - Local datasets for testing (images available via Google Drive)
-- `Cabinet_new/` - Cabinet scene dataset and processing results
-- `sam2/` - SAM2 segmentation model integration
 
 ## Quick Setup
 
@@ -56,18 +54,18 @@ The tar file contains:
 
 The following files contain our custom implementations and are recommended for use:
 
-### 1. **`vggt_robust.py`** - Main 3D Reconstruction Pipeline
+### 1. **`vggt_infererence.py`** - Main 3D Reconstruction Pipeline
 Our robust implementation of VGGT for 3D reconstruction with enhanced error handling and processing.
 
 ```bash
-python vggt/vggt_robust.py --scene_dir /path/to/your/images/
+python vggt/vggt_infererence.py --scene_dir /path/to/your/images/
 ```
 
-### 2. **`own_visualization.py`** - Custom Visualization Tools
+### 2. **`visual_util.py`** - Custom Visualization Tools
 Enhanced visualization utilities for 3D point clouds and reconstruction results.
 
 ```bash
-python vggt/own_visualization.py --scene_dir /path/to/scene/
+python vggt/visual_util.py --scene_dir /path/to/scene/
 ```
 
 ### 3. **`scene_priors.json`** - Scene Configuration
@@ -75,11 +73,11 @@ JSON configuration file containing scene priors, object categories, and semantic
 
 Located at: `vggt/scene_priors.json`
 
-### 4. **`viser_vis.py`** - Interactive 3D Viewer
+### 4. **`viser_visualization.py`** - Interactive 3D Viewer
 Interactive 3D visualization using Viser for exploring reconstruction results.
 
 ```bash
-python vggt/viser_vis.py --scene_dir /path/to/scene/
+python vggt/viser_visualization.py --scene_dir /path/to/scene/
 ```
 
 **Note:** Other files in the repository are experimental or work-in-progress and may not be fully functional.
@@ -113,10 +111,10 @@ with torch.no_grad():
 
 ```bash
 # Basic reconstruction
-python vggt/vggt_robust.py --scene_dir /path/to/images/
+python vggt/vggt_infererence.py --scene_dir /path/to/images/
 
 # With visualization
-python vggt/viser_vis.py --scene_dir /path/to/images/
+python vggt/viser_visualization.py --scene_dir /path/to/images/
 ```
 
 ### Using Original VGGT Tools

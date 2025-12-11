@@ -1,5 +1,5 @@
 {
-  "__comment__": "THE MOTHERLODE V2: Deep Scene Priors including exhaustive Cabinetry & Storage.",
+  "__comment__": "THE MOTHERLODE V3: Deep Scene Priors including Gaming, EDC, and corrected Office taxonomy.",
 
   "__STORAGE_AND_CABINETRY__": [],
   "cabinet": [
@@ -57,6 +57,20 @@
     "box", "bag", "toy", "clothing"
   ],
 
+  "__PACKAGING__": [],
+  "bag": [
+    "bag", "paper bag", "brown bag", "grocery bag", "shopping bag", "sack", "tote",
+    "kraft paper", "brown paper", "recycled paper", "cardboard",
+    "handle", "strap", "twisted handle", "flat handle", "cutout",
+    "bottom", "rectangular base", "gusset", "side",
+    "structure", "fold", "crease", "wrinkle", "crumple", "texture",
+    "opening", "rim", "edge", "interior"
+  ],
+  "box": [
+    "box", "cardboard box", "shipping box", "moving box", "carton", "crate", "plastic crate",
+    "storage bin", "container", "lid", "tape", "packing tape", "label", "sticker", "package", "parcel"
+  ],
+
   "__KITCHEN_DEEP_DIVE__": [],
   "kitchen": [
     "kitchen", "kitchenette", "pantry", "galley",
@@ -81,6 +95,15 @@
     "teapot", "tea bag", "coffee bean", "coffee ground", "sugar bowl", "creamer",
     "blender", "juicer", "smoothie maker", "soda stream",
     "bottle", "water bottle", "wine bottle", "beer bottle", "cork", "cap", "opener"
+  ],
+  "spice": [
+    "pepper", "black pepper", "ground pepper", "cracked pepper", "peppercorn",
+    "spice", "seasoning", "condiment", "herb", "salt",
+    "jar", "spice jar", "glass jar", "shaker", "grinder", "mill",
+    "container", "bottle", "tub", "tin",
+    "lid", "cap", "screw cap", "flip top", "sifter", "holes",
+    "label", "sticker", "branding", "text", "logo", "wrapper",
+    "content", "powder", "granule", "grain", "dust", "pile"
   ],
 
   "__FOOD_AND_ORGANIC__": [],
@@ -112,24 +135,51 @@
     "corn", "corn on the cob", "cob", "mushroom", "bean", "pea", "asparagus", "celery"
   ],
 
-  "__OFFICE_AND_TECH__": [],
-  "computer": [
-    "computer", "pc", "personal computer", "desktop", "workstation", "tower", "case",
-    "laptop", "notebook", "ultrabook", "macbook", "chromebook", "screen", "keyboard", "hinge",
-    "monitor", "display", "screen", "panel", "bezel", "stand", "arm", "mount",
-    "keyboard", "key", "spacebar", "numpad", "mouse", "scroll wheel", "buttons", "trackpad", "mousepad",
-    "cable", "hdmi", "usb", "ethernet", "power cord", "adapter", "dongle", "hub", "dock",
-    "webcam", "camera", "microphone", "speaker", "headset", "headphones"
+  "__WORK_AND_PLAY__": [],
+  "office": [
+    "office", "workspace", "cubicle", "desk", "standing desk", "L-shaped desk",
+    "chair", "office chair", "swivel chair", "ergonomic chair", "armrest", "castor", "wheel", "mesh back",
+    "whiteboard", "marker", "eraser", "corkboard", "pin", "file cabinet", "bookshelf", "binder", "folder",
+    "desk lamp", "architect lamp", "organizer", "tray", "coaster"
   ],
-  "desk_items": [
+  "computer": [
+    "computer", "pc", "personal computer", "desktop", "workstation", "tower", "case", "chassis",
+    "laptop", "notebook", "macbook", "ultrabook", "chromebook", "hinge", "trackpad",
+    "monitor", "display", "screen", "dual monitor", "ultrawide", "curved monitor", "panel", "bezel", "stand", "monitor arm", "vesa mount",
+    "keyboard", "mechanical keyboard", "keycap", "numpad", "wrist rest",
+    "mouse", "mousepad", "desk mat", "scroll wheel",
+    "peripheral", "dock", "docking station", "hub", "dongle", "adapter", "cable", "hdmi", "usb", "ethernet", "power cord", "brick",
+    "webcam", "camera", "microphone", "speaker", "soundbar", "headset", "headphones"
+  ],
+  "gaming": [
+    "gaming setup", "battlestation", "rig",
+    "console", "video game console", "playstation", "ps5", "xbox", "series x", "nintendo switch", "switch dock", "joy-con",
+    "controller", "gamepad", "dualsense", "remote", "joystick", "fight stick", "steering wheel", "pedals",
+    "headset", "gaming headset", "headphone stand",
+    "microphone", "boom arm", "pop filter", "shock mount", "audio interface", "stream deck", "capture card",
+    "rgb", "led strip", "lighting", "nanoleaf", "backlight",
+    "chair", "gaming chair", "racing chair"
+  ],
+  "personal_effects": [
+    "personal item", "edc", "everyday carry", "belongings",
+    "wallet", "leather wallet", "card holder", "money clip", "purse", "handbag",
+    "watch", "wristwatch", "smartwatch", "apple watch", "band", "strap", "fitness tracker",
+    "glasses", "eyeglasses", "sunglasses", "spectacles", "glasses case", "lens cloth",
+    "keys", "keychain", "car key", "fob", "house key", "lanyard",
+    "phone", "smartphone", "iphone", "mobile", "case", "phone stand",
+    "headphones", "earbuds", "airpods", "charging case", "tws",
+    "vape", "lighter", "pocket knife", "multitool"
+  ],
+  "stationery": [
     "pen", "ballpoint", "fountain pen", "pencil", "mechanical pencil", "stylus",
-    "marker", "permanent marker", "highlighter", "dry erase marker",
+    "marker", "permanent marker", "highlighter", "sharpie", "dry erase marker",
     "eraser", "sharpener", "ruler", "scissors", "x-acto knife", "box cutter",
     "tape", "scotch tape", "masking tape", "duct tape", "dispenser",
-    "stapler", "staple remover", "hole punch", "paper clip", "binder clip", "thumbtack", "push pin",
+    "stapler", "staple remover", "staples", "hole punch",
+    "clip", "paper clip", "binder clip", "thumbtack", "push pin",
+    "paper", "stack of paper", "document", "envelope", "letter",
     "notebook", "notepad", "journal", "diary", "sketchbook", "sticky note", "post-it",
-    "folder", "file", "binder", "envelope", "document", "paper", "stack of paper",
-    "calculator", "phone", "smartphone", "tablet", "ipad", "charger"
+    "calculator"
   ],
 
   "__TOOLS_AND_CONSTRUCTION__": [],
@@ -223,26 +273,6 @@
     "bathtub", "tub", "shower", "shower head", "shower curtain", "drain",
     "mirror", "vanity", "cabinet", "towel", "bath towel", "hand towel", "towel rack",
     "toilet paper", "toilet roll", "toothbrush", "toothpaste", "soap", "shampoo", "conditioner", "loofah", "scale"
-  ],
-
-  "__OFFICE_AND_WORK__": [],
-  "office": [
-    "office", "workspace", "cubicle", "desk", "standing desk", "L-shaped desk", "drawer",
-    "chair", "office chair", "swivel chair", "ergonomic chair", "armrest", "castor", "wheel",
-    "monitor", "computer screen", "display", "dual monitor", "stand",
-    "computer", "pc", "desktop", "tower", "case", "laptop", "notebook", "macbook",
-    "keyboard", "mechanical keyboard", "keycap", "mouse", "mousepad", "trackpad",
-    "printer", "scanner", "shredder", "telephone", "landline", "headset", "headphones",
-    "whiteboard", "marker", "eraser", "corkboard", "pin", "file cabinet", "bookshelf", "binder", "folder"
-  ],
-  "stationery": [
-    "pen", "pencil", "marker", "highlighter", "sharpie", "eraser", "ruler", "scissors", "stapler",
-    "staples", "paper clip", "binder clip", "tape", "dispenser", "notebook", "notepad", "post-it", "sticky note",
-    "paper", "document", "envelope", "calculator"
-  ],
-  "box": [
-    "box", "cardboard box", "shipping box", "moving box", "carton", "crate", "plastic crate",
-    "storage bin", "container", "lid", "tape", "packing tape", "label", "sticker", "package", "parcel"
   ],
 
   "__INDUSTRIAL_AND_ROBOTICS__": [],

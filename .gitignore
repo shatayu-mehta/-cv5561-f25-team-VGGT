@@ -40,3 +40,28 @@ Miniconda3-*.sh
 *.tar.gz
 *.zip
 Outputs/RGB-D_TUM/Run_112_Frames_L40/
+
+# Exclude Cabinet_new and evaluation folders
+Cabinet_new/
+evaluation/
+
+# Exclude images
+*.png
+*.jpg
+*.jpeg
+*.JPG
+*.JPEG
+*.PNG
+
+# Exclude large model files
+*.pt
+*.pth
+*.onnx
+*.glb
+*.npz
+*.npy
+
+# Exclude video files
+*.mp4
+*.avi
+*.mov
