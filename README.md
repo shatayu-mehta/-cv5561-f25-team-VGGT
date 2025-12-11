@@ -14,8 +14,14 @@ This repository contains our implementation and extensions of Visual Geometry Gr
 │   ├── viser_visualization.py     # Interactive 3D visualization tool
 │   ├── scene_priors.json          # Scene configuration and object categories
 │   └── ...                        # Additional utility scripts
-├── my_datasets/                   # Input datasets (images only, organized by scene)
-└── evaluation/                    # Evaluation metrics and results (local only)
+├── VGGT_Evaluation/               # Depth evaluation against TUM RGB-D ground truth
+│   ├── evaluate_depth_multiple.py # Script for computing depth metrics
+│   ├── Datasets/                  # TUM RGB-D timestamped images and ground truth depth
+│   │   ├── Cabinet/               # Cabinet scene with aligned GT depth
+│   │   └── Plates/                # Plates scene with aligned GT depth
+│   ├── results_vggt_cabinet/      # Evaluation results and metric plots for Cabinet
+│   └── results_vggt_Plates/       # Evaluation results and metric plots for Plates
+└── my_datasets/                   # Input datasets (images only, organized by scene)
 ```
 
 ## Quick Setup
@@ -171,13 +177,58 @@ All major functions include docstrings and comments explaining:
 - Recommended: 16GB+ VRAM for larger scenes (20+ images)
 - Optimal: NVIDIA H100 or A100 for large-scale reconstructions (100+ images)
 
-## Evaluation Metrics
+## VGGT Depth Evaluation
 
-The repository includes evaluation scripts in the `evaluation/` directory:
+The `VGGT_Evaluation/` directory contains our evaluation of VGGT depth predictions against TUM RGB-D ground truth data.
 
-- **`eval_chamfer.py`**: Computes Chamfer distance between reconstructed and ground truth point clouds
-- **`eval_completeness.py`**: Measures reconstruction completeness and coverage
-- **`eval_segmentation.py`**: Evaluates segmentation mask quality (IoU, precision, recall)
+### What It Does
+
+This evaluation measures the accuracy of VGGT's depth estimation by comparing predicted depth maps against ground truth depth from the TUM RGB-D dataset. The evaluation computes standard depth metrics including:
+
+- **Absolute Relative Error (abs_rel)**: Mean absolute relative difference
+- **Square Relative Error (sq_rel)**: Mean squared relative difference  
+- **RMSE**: Root Mean Square Error
+- **RMSE log**: RMSE in log space
+- **MAE**: Mean Absolute Error
+- **SILog**: Scale-Invariant Logarithmic Error
+- **δ < 1.25, δ < 1.25², δ < 1.25³**: Threshold accuracy (percentage of pixels within threshold)
+
+### Why Use Only These Files
+
+The datasets in `VGGT_Evaluation/Datasets/` are specifically prepared for accurate evaluation:
+
+1. **Timestamped Images**: RGB images from TUM RGB-D with precise timestamps (e.g., `1341841279.510715.png`)
+2. **Aligned Ground Truth**: Ground truth depth maps with matching timestamps (e.g., `1341841279.510727.png`)
+3. **Manual Alignment**: Some images were manually renamed to ensure proper timestamp correspondence between RGB and depth
+4. **Same Format**: All data follows TUM RGB-D conventions (depth in uint16, scale factor 5000.0)
+
+Using these pre-aligned datasets ensures:
+- Correct frame-to-frame correspondence between predicted and ground truth depth
+- Proper scale alignment for fair comparison
+- Reproducible evaluation results
+
+### Running the Evaluation
+
+```bash
+cd VGGT_Evaluation
+
+# Evaluate a single scene (e.g., Cabinet)
+python evaluate_depth_multiple.py \
+  --gt_folder Datasets/Cabinet/GT_Depth \
+  --pred_folder Datasets/Cabinet/VGGT_Predicted_Depth \
+  --output_dir results_vggt_cabinet \
+  --depth_scale 5000.0 \
+  --align_method median
+```
+
+### Output
+
+The evaluation generates:
+- **Metric plots**: Individual curves for each metric showing per-frame performance and cumulative mean
+- **Summary statistics**: Aggregated metrics across all frames
+- **Visual comparisons**: Side-by-side depth map comparisons
+
+Results are saved in `results_vggt_cabinet/` and `results_vggt_Plates/` with metric curve plots showing VGGT's depth prediction accuracy.
 
 ## Datasets
 
