@@ -128,7 +128,7 @@ Open your browser to `http://localhost:8080` to explore the 3D reconstruction.
 - **Camera Pose Estimation**: Automatic camera intrinsic and extrinsic estimation
 - **Depth Map Generation**: Dense depth estimation for each view
 - **Point Cloud Generation**: 3D point cloud reconstruction with confidence scores
-- **Object Segmentation**: Integration with SAM2 for object-aware processing
+- **Object Segmentation**: Integration with SAM for precise mask generation
 - **Scene Understanding**: Semantic scene priors for improved reconstruction
 
 ## Implementation Details
