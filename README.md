@@ -4,6 +4,12 @@ This repository contains our implementation and extensions of Visual Geometry Gr
 - **Method A**: YOLO + SAM with 3D lifting
 - **Method B**: Geometric propagation-based segmentation
 
+## Team
+
+**Project Collaborators:**
+- Shatayu Avinash Mehta - [mehta405@umn.edu](mailto:mehta405@umn.edu)
+- Pritish Prashant Vitekar - [vitek031@umn.edu](mailto:vitek031@umn.edu)
+
 ## Repository Structure
 
 ```
