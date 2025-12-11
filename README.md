@@ -212,13 +212,23 @@ Using these pre-aligned datasets ensures:
 ```bash
 cd VGGT_Evaluation
 
-# Evaluate a single scene (e.g., Cabinet)
+# Evaluate Cabinet scene
 python evaluate_depth_multiple.py \
-  --gt_folder Datasets/Cabinet/GT_Depth \
-  --pred_folder Datasets/Cabinet/VGGT_Predicted_Depth \
-  --output_dir results_vggt_cabinet \
-  --depth_scale 5000.0 \
-  --align_method median
+  --gt-dir "Datasets/Cabinet/GT_Depth" \
+  --pred-dir "Datasets/Cabinet/Predicted_Depth_npy" \
+  --gt-ext .png \
+  --pred-ext .npy \
+  --scale-method median \
+  --out-dir "results_vggt_cabinet"
+
+# Evaluate Plates scene
+python evaluate_depth_multiple.py \
+  --gt-dir "Datasets/Plates/GT_DEPTH" \
+  --pred-dir "Datasets/Plates/VGGT_DEPTH" \
+  --gt-ext .png \
+  --pred-ext .npy \
+  --scale-method median \
+  --out-dir "results_vggt_Plates"
 ```
 
 ### Output
