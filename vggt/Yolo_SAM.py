@@ -1,3 +1,25 @@
+"""
+Method A: YOLO + SAM Segmentation with 3D Lifting
+
+This script implements object detection and segmentation using:
+1. YOLO-World for open-vocabulary object detection
+2. SAM (Segment Anything Model) for precise mask generation
+3. 3D lifting using VGGT depth estimates and camera poses
+
+Workflow:
+- Detect objects of interest in each frame using YOLO-World
+- Generate precise segmentation masks with SAM
+- Unproject masked pixels to 3D using depth maps
+- Apply depth filtering to remove background leakage
+- Merge multi-view point clouds with statistical cleaning
+
+Usage:
+    python Yolo_SAM.py
+    
+Input: RGB images in my_datasets/<scene>/images/
+Output: Segmented 3D point clouds and debug visualizations
+"""
+
 import os
 import re
 import json
@@ -11,20 +33,34 @@ from tqdm import tqdm
 import glob
 from collections import Counter
 
-# --- CONFIGURATION ---
-IGNORE_CLASSES = ["person", "man", "woman", "handbag", "backpack"]
-JSON_CONFIG_PATH = "scene_priors.json"
+# Configuration parameters
+IGNORE_CLASSES = ["person", "man", "woman", "handbag", "backpack"]  # Classes to exclude from detection
+JSON_CONFIG_PATH = "scene_priors.json"  # Scene-specific object categories
 
 # ---------------------------------------------------------
 # 1. Helper Functions (Loading Priors)
 # ---------------------------------------------------------
 def load_scene_priors(json_path):
+    """
+    Load scene-specific object categories from JSON configuration.
+    
+    The scene priors map scene types (e.g., "office", "kitchen") to lists
+    of objects commonly found in those scenes. This guides YOLO-World to
+    detect relevant objects.
+    
+    Args:
+        json_path: Path to scene_priors.json configuration file
+        
+    Returns:
+        Dictionary mapping scene categories to object lists
+    """
     if os.path.exists(json_path):
         print(f" [i] Loading scene priors from: {json_path}")
         try:
             with open(json_path, 'r') as f:
                 data = json.load(f)
-                if "__comment__" in data: del data["__comment__"]
+                if "__comment__" in data:
+                    del data["__comment__"]
                 return data
         except Exception as e:
             print(f" [!] Error loading JSON: {e}. Using fallback.")
@@ -41,6 +77,21 @@ def load_scene_priors(json_path):
 SCENE_PRIORS = load_scene_priors(JSON_CONFIG_PATH)
 
 def preprocess_image_vggt_style(image_path, target_size=518):
+    """
+    Preprocess images to match VGGT's expected format.
+    
+    Ensures images are:
+    - RGB format (handles RGBA by compositing on white background)
+    - Resized to target width with height as multiple of 14
+    - Center-cropped if taller than target size
+    
+    Args:
+        image_path: Path to input image
+        target_size: Target width/height in pixels (default: 518)
+        
+    Returns:
+        Numpy array (H, W, 3) in RGB format, uint8
+    """
     try:
         img = Image.open(image_path)
         if img.mode == "RGBA":
@@ -68,6 +119,21 @@ def preprocess_image_vggt_style(image_path, target_size=518):
         return None
 
 def process_dataset(dataset_root_dir):
+    """
+    Scan dataset directory and load all images.
+    
+    Walks through the directory structure looking for 'images' folders,
+    preprocesses all image files, and creates a mapping of datasets to
+    their image paths.
+    
+    Args:
+        dataset_root_dir: Root directory containing scene subdirectories
+        
+    Returns:
+        Tuple of (processed_images, dataset_map) where:
+        - processed_images: dict mapping image paths to numpy arrays
+        - dataset_map: dict mapping dataset directories to lists of image paths
+    """
     processed_images = {}
     dataset_map = {} 
     
@@ -87,16 +153,33 @@ def process_dataset(dataset_root_dir):
                         
     return processed_images, dataset_map
 
-# ---------------------------------------------------------
-# 2. Scene Identification
-# ---------------------------------------------------------
+# Scene Identification: Automatically determine target objects from folder names
+
 def clean_object_name(obj_str):
+    """
+    Clean object name by removing brackets, numbers, and special characters.
+    
+    Args:
+        obj_str: Raw object name string
+        
+    Returns:
+        Cleaned lowercase string
+    """
     obj_str = re.sub(r"[\(\[].*?[\)\]]", "", obj_str)
     obj_str = re.sub(r"\d+", "", obj_str)
     obj_str = obj_str.replace(":", "").replace("_", " ")
     return obj_str.strip().lower()
 
 def build_reverse_index(priors_dict):
+    """
+    Build reverse lookup from object names to scene categories.
+    
+    Args:
+        priors_dict: Scene priors dictionary
+        
+    Returns:
+        Dictionary mapping object names to list of parent categories
+    """
     index = {}
     for category, items in priors_dict.items():
         if category not in index: index[category] = []
@@ -110,6 +193,19 @@ def build_reverse_index(priors_dict):
     return index
 
 def get_scene_objects(dataset_dir):
+    """
+    Automatically identify target objects for segmentation.
+    
+    Uses two strategies:
+    1. Folder name analysis: Match tokens against scene_priors.json
+    2. Detection log analysis: Find frequently detected objects
+    
+    Args:
+        dataset_dir: Path to dataset directory
+        
+    Returns:
+        List of target object names for YOLO-World detection
+    """
     ds_name = os.path.basename(dataset_dir).lower()
     tokens = re.split(r'[_\-\s\.]+', ds_name)
     reverse_index = build_reverse_index(SCENE_PRIORS)
@@ -159,12 +255,29 @@ def get_scene_objects(dataset_dir):
     print(f" [WARN] No match found in folder name or logs. Using generic fallback.")
     return ["chair", "table", "box", "door", "floor"]
 
-# ---------------------------------------------------------
-# 3. Mask Generation & Visualization (MODIFIED)
-# ---------------------------------------------------------
+# Mask Generation: YOLO detection + SAM segmentation
+
 def generate_scene_masks(dataset_dir, processed_images, target_objects):
+    """
+    Generate segmentation masks for target objects in all frames.
+    
+    Pipeline:
+    1. Run YOLO-World detection with confidence threshold (0.11)
+    2. For each detection, generate precise mask using SAM
+    3. Combine masks from all detections into single binary mask
+    4. Save cutout visualizations and detection logs
+    
+    Args:
+        dataset_dir: Dataset directory path
+        processed_images: Dictionary of preprocessed images
+        target_objects: List of object classes to detect
+        
+    Returns:
+        Dictionary mapping image paths to binary masks (H, W) uint8
+    """
     masks_dict = {}
-    if not processed_images or not target_objects: return {}
+    if not processed_images or not target_objects:
+        return {}
 
     print(f"Loading models to isolate: {target_objects}")
     try:
@@ -228,18 +341,36 @@ def generate_scene_masks(dataset_dir, processed_images, target_objects):
     
     return masks_dict
 
-# ---------------------------------------------------------
-# 4. 3D Lifting (MODIFIED with Depth Filtering)
-# ---------------------------------------------------------
+# 3D Lifting: Unproject masked pixels to world coordinates
+
 def get_vggt_files(dataset_dir):
+    """
+    Locate VGGT output files (depth maps, poses, intrinsics).
+    
+    Args:
+        dataset_dir: Dataset directory path
+        
+    Returns:
+        Tuple of (depth_files, pose_files, intrinsic_files) sorted lists
+    """
     out_dir = os.path.join(dataset_dir, "outputs")
     depths = sorted(glob.glob(os.path.join(out_dir, "depths", "*.npy")))
-    if not depths: depths = sorted(glob.glob(os.path.join(out_dir, "depths", "*.png")))
+    if not depths:
+        depths = sorted(glob.glob(os.path.join(out_dir, "depths", "*.png")))
     poses = sorted(glob.glob(os.path.join(out_dir, "poses", "*extrinsic.txt")))
     intrinsics = sorted(glob.glob(os.path.join(out_dir, "poses", "*intrinsic.txt")))
     return depths, poses, intrinsics
 
 def clean_point_cloud(pcd):
+    """
+    Remove statistical outliers from point cloud.
+    
+    Args:
+        pcd: Open3D point cloud
+        
+    Returns:
+        Cleaned point cloud with outliers removed
+    """
     print("  > Cleaning noise (Statistical Outlier Removal)...")
     cl, ind = pcd.remove_statistical_outlier(nb_neighbors=75, std_ratio=1.0)
     pcd_clean = pcd.select_by_index(ind)
@@ -247,10 +378,29 @@ def clean_point_cloud(pcd):
     return pcd_clean
 
 def lift_single_dataset(dataset_dir, image_paths, masks_dict, processed_images):
+    """
+    Lift 2D segmentation masks to 3D point clouds using depth and poses.
+    
+    Key features:
+    - Depth filtering: Only keeps points near object's mean depth (within 0.5m)
+    - This prevents background pixels from leaking through holes in masks
+    - Merges points from all frames into single point cloud
+    - Applies statistical outlier removal for final cleaning
+    
+    Args:
+        dataset_dir: Dataset directory path
+        image_paths: List of image file paths
+        masks_dict: Dictionary mapping images to segmentation masks
+        processed_images: Dictionary of preprocessed image arrays
+        
+    Returns:
+        Open3D point cloud with cleaned 3D points and colors, or None if failed
+    """
     sorted_image_paths = sorted(image_paths)
     depth_files, pose_files, intrin_files = get_vggt_files(dataset_dir)
     
-    if not depth_files: return None
+    if not depth_files:
+        return None
 
     num_frames = min(len(sorted_image_paths), len(depth_files), len(pose_files))
     points = []
@@ -274,47 +424,53 @@ def lift_single_dataset(dataset_dir, image_paths, masks_dict, processed_images):
         K = np.loadtxt(intrin_files[i]) if i < len(intrin_files) else np.loadtxt(os.path.join(dataset_dir, "intrinsics.txt"))
 
         h, w = depth.shape[:2]
-        if mask.shape[:2] != (h, w): mask = cv2.resize(mask, (w, h), interpolation=cv2.INTER_NEAREST)
-        if img_rgb.shape[:2] != (h, w): img_rgb = cv2.resize(img_rgb, (w, h), interpolation=cv2.INTER_LINEAR)
+        if mask.shape[:2] != (h, w):
+            mask = cv2.resize(mask, (w, h), interpolation=cv2.INTER_NEAREST)
+        if img_rgb.shape[:2] != (h, w):
+            img_rgb = cv2.resize(img_rgb, (w, h), interpolation=cv2.INTER_LINEAR)
 
-        # 1. Base Validity: Masked, and sensor limits
+        # Apply base validity checks: must be masked, within sensor range
         valid_base = (mask > 0) & (depth > 0.1) & (depth < 10.0)
         
-        # --- MODIFICATION 2: DEPTH FILTERING (GEOMETRIC GUARD) ---
-        # Calculate mean depth of the object IN THIS FRAME
+        # Depth filtering: Remove background pixels seen through holes in mask
+        # Calculate mean depth of object in this frame
         object_depths = depth[valid_base]
         
         if len(object_depths) < 10:
             continue
 
-        # target_z = np.median(object_depths)   asdeda 
-        mean_z = np.mean(object_depths)                  
-        tolerance = 0.5
+        mean_z = np.mean(object_depths)
+        tolerance = 0.5  # 50cm tolerance around object depth
         
-        # Filter: Only keep pixels close to the object's mean depth
-        # This removes background pixels seen through holes or at edges
-        valid = valid_base & (depth > mean_z - tolerance) & (depth < mean_z + tolerance)               
-        # valid = valid_base & (depth > target_z - tolerance) & (depth < target_z + tolerance)          asadsd
-        # ---------------------------------------------------------
+        # Only keep pixels close to object's mean depth plane
+        # This filters out walls/floors visible through segmentation errors
+        valid = valid_base & (depth > mean_z - tolerance) & (depth < mean_z + tolerance)
 
-        if np.sum(valid) < 10: continue
+        if np.sum(valid) < 10:
+            continue
 
         ys, xs = np.where(valid)
         z = depth[ys, xs]
         fx, fy, cx, cy = K[0,0], K[1,1], K[0,2], K[1,2]
         
+        # Unproject to camera space using pinhole camera model
         x = (xs - cx) * z / fx
         y = (ys - cy) * z / fy
         points_cam = np.stack([x, y, z], axis=-1)
         
-        if pose.shape == (3, 4): pose = np.vstack([pose, [0,0,0,1]])
+        # Ensure pose is 4x4 transformation matrix
+        if pose.shape == (3, 4):
+            pose = np.vstack([pose, [0,0,0,1]])
+            
         try:
+            # Transform from camera to world coordinates
             c2w = np.linalg.inv(pose)
             world_pts = (points_cam @ c2w[:3, :3].T) + c2w[:3, 3]
             cols = img_rgb[ys, xs] / 255.0
             points.append(world_pts)
             colors.append(cols)
-        except: continue
+        except:
+            continue
 
     if not points: return None
     
@@ -324,12 +480,26 @@ def lift_single_dataset(dataset_dir, image_paths, masks_dict, processed_images):
     
     return clean_point_cloud(pcd)
 
-# ---------------------------------------------------------
-# 5. Main
-# ---------------------------------------------------------
+# Main execution
+
 def main():
+    """
+    Main entry point for YOLO+SAM segmentation pipeline.
+    
+    Processes all datasets in my_datasets/ directory:
+    1. Auto-detect target objects from folder names
+    2. Generate segmentation masks using YOLO+SAM
+    3. Lift masks to 3D using VGGT depth estimates
+    4. Save cleaned point clouds as PLY files
+    
+    Output files:
+    - <dataset>/<dataset>_full_scene_cleaned.ply: Final 3D reconstruction
+    - <dataset>/cutouts/: Segmentation visualizations
+    - <dataset>/debug_frame_detections.txt: Detection log
+    """
     MY_DATASET_PATH = "/projects/standard/csci5561/shared/G11/my_datasets" 
-    if not os.path.exists(MY_DATASET_PATH): return print("Path not found")
+    if not os.path.exists(MY_DATASET_PATH):
+        return print("Path not found")
 
     output_data, dataset_map = process_dataset(MY_DATASET_PATH)
     if not output_data: return print("No images loaded")

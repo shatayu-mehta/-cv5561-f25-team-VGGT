@@ -1,4 +1,4 @@
-import os
+\"\"\"\nMethod B: Geometric Propagation-based Segmentation\n\nThis script implements mask propagation across frames using geometric projection:\n1. Detect and segment object in Frame 1 using YOLO-World + SAM\n2. Extract color palette from segmented object\n3. Project Frame 1 mask to all other frames using camera poses\n4. Use convex hull to create \"spotlight\" region in each frame\n5. Harvest surface points within spotlight that match color palette\n6. Fuse points using voxel voting to ensure multi-view consistency\n\nAdvantages over Method A:\n- More robust for texture-less objects\n- Better temporal consistency across frames\n- Handles partial occlusions via voting mechanism\n\nUsage:\n    python propogation.py\n    \nInput: RGB images in my_datasets/<scene>/images/\nOutput: Geometrically propagated 3D point clouds\n\"\"\"\n\nimport os
 import re
 import json
 import cv2
@@ -163,11 +163,24 @@ def get_scene_objects(dataset_dir):
     print(f" [WARN] No match found in folder name or logs. Using generic fallback.")
     return ["chair", "table", "box", "door", "floor"]
 
-# ---------------------------------------------------------
-# 2. Mask Generation (Frame 1 ONLY)
-# ---------------------------------------------------------
+# Frame 1 Anchor Detection: Detect and segment target in first frame only
+
 def get_frame1_anchor_mask(image_paths, target_objects):
-    if not image_paths or not target_objects: return None, None
+    """
+    Detect and segment target objects in first frame only.
+    
+    This "anchor" mask will be geometrically propagated to all other frames.
+    Uses raised confidence threshold (0.15) to avoid false positives.
+    
+    Args:
+        image_paths: List of all image paths in dataset
+        target_objects: List of object classes to detect
+        
+    Returns:
+        Tuple of (combined_mask, first_image_path) or None if detection failed
+    """
+    if not image_paths or not target_objects:
+        return None, None
 
     print(f" [!] Frame 1 Detection Mode: Isolating {target_objects}")
     
@@ -221,9 +234,20 @@ def get_frame1_anchor_mask(image_paths, target_objects):
     return combined_mask, first_path
 
 def save_verification_mask(dataset_dir, img_path, mask):
-    """Saves mask for visual check."""
+    """
+    Save anchor mask visualization for manual verification.
+    
+    Creates a visual overlay showing what was detected in Frame 1.
+    Useful for debugging and confirming correct object detection.
+    
+    Args:
+        dataset_dir: Dataset directory path
+        img_path: Path to anchor frame image
+        mask: Binary segmentation mask
+    """
     img_rgb = preprocess_image_vggt_style(img_path)
-    if img_rgb is None: return
+    if img_rgb is None:
+        return
         
     img_bgr = cv2.cvtColor(img_rgb, cv2.COLOR_RGB2BGR)
     vis_mask = (mask * 255).astype(np.uint8)
@@ -237,10 +261,18 @@ def save_verification_mask(dataset_dir, img_path, mask):
     
     print(f"\n [i] ANCHOR MASK SAVED: {save_path}")
 
-# ---------------------------------------------------------
-# 3. VGGT I/O & Geometric Fusion
-# ---------------------------------------------------------
+# VGGT I/O and Geometric Fusion Functions
+
 def load_vggt_outputs(dataset_dir):
+    """
+    Locate VGGT output files recursively in outputs directory.
+    
+    Args:
+        dataset_dir: Dataset directory path
+        
+    Returns:
+        Tuple of (depths, poses, intrinsics) as sorted file path lists
+    """
     out_dir = os.path.join(dataset_dir, "outputs")
     depths = sorted(glob.glob(os.path.join(out_dir, "**", "*depth*.npy"), recursive=True))
     poses = sorted(glob.glob(os.path.join(out_dir, "**", "*extrinsic*.txt"), recursive=True))
@@ -248,12 +280,24 @@ def load_vggt_outputs(dataset_dir):
     return depths, poses, intrs
 
 def read_matrix(path):
+    """Load transformation matrix from text file."""
     return np.loadtxt(path)
 
 def extract_dominant_palette(img_array, mask, k=5):
     """
-    Uses K-Means to find the K most dominant colors in the object mask.
-    This replaces simple 'Mean Color' to handle multi-colored objects.
+    Extract K dominant colors from masked region using K-Means clustering.
+    
+    This replaces simple mean color to handle multi-colored objects.
+    The color palette is used to filter harvested points in other frames,
+    ensuring we only keep pixels that match the object's appearance.
+    
+    Args:
+        img_array: RGB image array (H, W, 3)
+        mask: Binary mask indicating object pixels
+        k: Number of color clusters to extract (default: 5)
+        
+    Returns:
+        Array of K dominant colors (K, 3) float32, or None if failed
     """
     # Extract object pixels
     ys, xs = np.where(mask > 0)
@@ -276,8 +320,25 @@ def extract_dominant_palette(img_array, mask, k=5):
 
 def lift_anchor_to_3d(mask, depth_path, pose_path, intr_path, img_path_for_color=None):
     """
-    Lifts Frame 1 Mask to 3D. 
-    Extracts MULTI-COLOR Palette instead of single mean.
+    Lift Frame 1 anchor mask to 3D point cloud and extract color palette.
+    
+    Key features:
+    - Applies erosion to mask for "core sampling" (avoid edges)
+    - Extracts multi-color palette using K-Means
+    - Unprojects to world coordinates using camera parameters
+    
+    Args:
+        mask: Binary segmentation mask from Frame 1
+        depth_path: Path to Frame 1 depth map
+        pose_path: Path to Frame 1 extrinsic matrix
+        intr_path: Path to Frame 1 intrinsic matrix
+        img_path_for_color: Path to Frame 1 RGB image for palette extraction
+        
+    Returns:
+        Tuple of (points_3d, colors, palette) where:
+        - points_3d: (N, 3) array of 3D anchor points
+        - colors: (N, 3) array of RGB colors
+        - palette: (K, 3) array of dominant colors for filtering
     """
     print(" [2] Lifting Anchor to 3D (Core Sampling)...")
     depth = np.load(depth_path)
@@ -330,7 +391,33 @@ def lift_anchor_to_3d(mask, depth_path, pose_path, intr_path, img_path_for_color
     return np.ascontiguousarray(pts_world), colors, palette
 
 def propagate_and_harvest(anchor_pts, palette, img_paths, depths, poses, intrs):
-    voxel_map = {} 
+    """
+    Propagate anchor mask to all frames and harvest surface points.
+    
+    Multi-step pipeline:
+    1. Project 3D anchor points to each frame's image plane
+    2. Create convex hull "spotlight" from projected points
+    3. Dilate spotlight to capture object sides/back
+    4. Harvest depth points within spotlight
+    5. Filter by depth tolerance (±0.5m from ghost centroid)
+    6. Filter by color palette match (within COLOR_TOLERANCE)
+    7. Voxelize and vote - keep voxels seen in MIN_VOTES frames
+    
+    This voting mechanism ensures multi-view consistency and removes
+    spurious points that only appear in one view.
+    
+    Args:
+        anchor_pts: (N, 3) array of 3D anchor points from Frame 1
+        palette: (K, 3) array of dominant object colors
+        img_paths: List of all image paths
+        depths: List of depth map paths
+        poses: List of extrinsic matrix paths
+        intrs: List of intrinsic matrix paths
+        
+    Returns:
+        Open3D point cloud with fused and filtered 3D points
+    """
+    voxel_map = {}  # Dictionary for voxel voting: {voxel_key: [sum_pos, sum_color, count, votes]}
     
     anchor_h = np.hstack((anchor_pts, np.ones((len(anchor_pts), 1)))).T 
     
@@ -470,6 +557,13 @@ def propagate_and_harvest(anchor_pts, palette, img_paths, depths, poses, intrs):
     return pcd_frame
 
 def clean_and_save(pcd, save_path):
+    """
+    Apply final statistical outlier removal and save point cloud.
+    
+    Args:
+        pcd: Open3D point cloud
+        save_path: Output PLY file path
+    """
     print(f" [5] Post-Processing Cloud ({len(pcd.points)} points)...")
     
     if len(pcd.points) == 0:
